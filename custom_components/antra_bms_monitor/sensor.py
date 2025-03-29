@@ -281,7 +281,7 @@ class AntraBaseSensor(CoordinatorEntity, SensorEntity):
             "identifiers": {(DOMAIN, f"battery_{self._display_num}")},
             "name": f"Antra Battery {self._display_num}",
             "manufacturer": "Antra",
-            "model": "US2000/US3000",
+            "model": "BLF-48105H",
         }
 
     @property
@@ -330,7 +330,7 @@ class AntraPackHeaderSensor(CoordinatorEntity, SensorEntity):
             "identifiers": {(DOMAIN, "Antra_group")},
             "name": "Antra Battery Group",
             "manufacturer": "Antra",
-            "model": "US2000/US3000 Group"
+            "model": "BLF-48105H Group"
         }
         
     @property

@@ -16,9 +16,8 @@ A Home Assistant custom component that monitors Battery Management Systems (BMS)
 
 ## Supported Devices
 
-- Pylontech US2000/US3000 battery systems
 - Basen battery systems
-- Other BMS systems using the Antra/Pylontech protocol
+- Other BMS systems using the Antra/Basen protocol
 - Any battery system with compatible sensors for the energy tracking functionality
 
 ## Installation
