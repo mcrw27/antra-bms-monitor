@@ -35,7 +35,7 @@ A Home Assistant custom component that monitors Battery Management Systems (BMS)
 
 ### Manual Installation
 
-1. Copy both the `custom_components/battery_energy_tracker` and `custom_components/antra_bms` directories from this repository to your Home Assistant's `custom_components` directory
+1. Copy both the `custom_components/antra-bms-monitor` directory from this repository to your Home Assistant's `custom_components` directory
 2. Restart Home Assistant
 
 ## Configuration

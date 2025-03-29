@@ -14,13 +14,13 @@ jobs:
 
       - name: Create zip file
         run: |
-          cd custom_components/antra_bms
-          zip -r ../../antra_bms.zip .
+          cd custom_components/antra-bms-monitor
+          zip -r ../../antra-bms-monitor.zip .
 
       - name: Upload zip to release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            antra_bms.zip
+            antra-bms-monitor.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
