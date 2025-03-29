@@ -1,10 +1,12 @@
 {
     "domain": "antra_bms",
     "name": "Antra BMS Monitor",
-    "documentation": "https://github.com/YOUR_USERNAME/antra-bms-monitor",
-    "codeowners": [],
-    "requirements": [
-        "pyserial-asyncio>=0.5"
-    ],
-    "version": "0.1.0"
-}
+    "documentation": "https://github.com/mcrw27/antra_bms",
+    "issue_tracker": "https://github.com/mcrw27/antra_bms/issues",
+    "dependencies": [],
+    "codeowners": ["@mcrw27"],
+    "requirements": ["pyserial-asyncio>=0.5"],
+    "iot_class": "local_polling",
+    "version": "0.1.0",
+    "config_flow": true
+  }
