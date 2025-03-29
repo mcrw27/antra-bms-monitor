@@ -1,0 +1,16 @@
+{
+  "domain": "antra_bms_monitor",
+  "name": "Antra BMS Monitor",
+  "codeowners": [
+    "@mcrw27"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/mcrw27/antra-bms-monitor",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/mcrw27/antra-bms-monitor/issues",
+  "requirements": [
+    "pyserial-asyncio>=0.5"
+  ],
+  "version": "0.1.0"
+}

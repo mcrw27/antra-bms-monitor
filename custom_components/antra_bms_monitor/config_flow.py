@@ -1,4 +1,4 @@
-"""Constants for the Antra BMS integration.""" 
+"""Config flow for Antra BMS.""" 
 from __future__ import annotations
 
 import logging
