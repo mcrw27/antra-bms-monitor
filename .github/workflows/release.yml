@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write  # Only grants permission to modify repository contents
+
 jobs:
   release_zip:
     name: Prepare release asset
