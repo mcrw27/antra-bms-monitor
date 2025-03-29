@@ -31,4 +31,4 @@ The integration can be configured through the Home Assistant UI:
 - **set_battery_to_full**: Set the stored energy to full capacity for one or all batteries
 - **set_battery_capacity**: Set the maximum capacity for a specific battery
 
-For more details, see the [full documentation on GitHub](https://github.com/YOUR_USERNAME/antra-bms-monitor).
+For more details, see the [full documentation on GitHub](https://github.com/mcrw27/antra-bms-monitor).

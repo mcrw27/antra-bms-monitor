@@ -28,7 +28,7 @@ A Home Assistant custom component that monitors Battery Management Systems (BMS)
 1. Make sure you have [HACS](https://hacs.xyz/) installed
 2. Go to HACS -> Integrations -> Click on the three dots in the top right corner
 3. Select "Custom repositories"
-4. Add this repository URL (`https://github.com/YOUR_USERNAME/antra-bms-monitor`) and select "Integration" as the category
+4. Add this repository URL (`https://github.com/mcrw27/antra-bms-monitor`) and select "Integration" as the category
 5. Click "ADD"
 6. Search for "Antra BMS Monitor" and install it
 7. Restart Home Assistant
