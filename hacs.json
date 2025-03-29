@@ -1,0 +1,6 @@
+{
+    "name": "Antra BMS Monitor",
+    "render_readme": true,
+    "domain": "antra_bms",
+    "homeassistant": "2023.6.0"
+}
