@@ -1,1 +1,26 @@
-name: Release 
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release_zip:
+    name: Prepare release asset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Create zip file
+        run: |
+          cd custom_components/antra_bms
+          zip -r ../../antra_bms.zip .
+
+      - name: Upload zip to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            antra_bms.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
