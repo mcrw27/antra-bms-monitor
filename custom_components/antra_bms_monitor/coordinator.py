@@ -398,18 +398,19 @@ class AntraDataCoordinator(DataUpdateCoordinator):
         8-11    Total Capacity      raw     01A4 = 420Ah
         12-15   Remaining Capacity  raw     01A4 = 420Ah
         16-19   System SOC          raw     0064 = 100%
-        20-23   Max Ambient Temp        /10     00A0 = 16.0°C
-        24-27   Min Ambient Temp       /10     0096 = 15.0°C
+        20-23   Max Ambient Temp    /10     00A0 = 16.0°C
+        24-27   Min Ambient Temp    /10     0096 = 15.0°C
         28-31   Max Cell Voltage    /1000   0E2A = 3.626V
         32-35   Min Cell Voltage    /1000   0D1A = 3.354V
-        36-39   Temperature Min      /10     0082 = 13.0
-        40-43   Temperature Max      /10     0050 = 8.0
-        44-61   Reserved            -       20 bytes zeros
-        62-63   Cell Count         raw      10 = 16 cells
-        64-65   Battery Count      raw      04 = 4 batteries
+        36-39   Alarm Status        raw     0050 = alarm status bits
+        40-43   Pack Temperature    /10     0082 = 13.0°C
+        44-61   Reserved            -       18 bytes zeros
+        62-63   Current Status      raw     10 = current status bits
+        64-65   Battery Count       raw     04 = 4 batteries
+        
         Args:
             decoded: Full hex string response
-            pos: Starting position of header block (default 22 after protocol header)
+            pos: Starting position of header block (default 12 after protocol header)
             
         Returns:
             Tuple of (header_data dict, new position after header)
@@ -440,24 +441,26 @@ class AntraDataCoordinator(DataUpdateCoordinator):
             header["max_cell_voltage"] = int(decoded[pos+28:pos+32], 16) 
             header["min_cell_voltage"] = int(decoded[pos+32:pos+36], 16) 
             
-            # Additional parameters
-            header["temperature_max"] = convert_signed(decoded, pos+40, 4, scale=10)
-            header["temperature_min"] = convert_signed(decoded, pos+44, 4, scale=10)
-            
+            # Status and temperature fields (36-43)
+
+            header["pack_temperature"] = convert_signed(decoded, pos+40, 4, scale=10)  # Pack temperature (was temperature_max)
+            header["alarm_status"] = int(decoded[pos+44:pos+48], 16)  # Raw alarm status value (was temperature_min)
+            _LOGGER.debug("Pack Temperature: %s -> %.1f°C", decoded[pos+40:pos+44], header["pack_temperature"])
+            _LOGGER.debug("Alarm Status: %s -> %d", decoded[pos+44:pos+48], header["alarm_status"])
+
             # Store reserved bytes
             header["reserved"] = decoded[pos+44:pos+62]
                     
-            # System configuration
-            header["cell_count"] = int(decoded[pos+62:pos+64], 16)
-            _LOGGER.debug("Cell Count: %s -> %d", decoded[pos+62:pos+64], header["cell_count"])
+            # System status and configuration (62-65)
+            header["current_status"] = int(decoded[pos+62:pos+64], 16)  # Current status bits
+            _LOGGER.debug("Current Status: %s -> %d", decoded[pos+62:pos+64], header["current_status"])
             header["battery_count"] = int(decoded[pos+64:pos+66], 16)
             
             _LOGGER.debug(
-                "Parsed header: V=%.2fV I=%.2fA SOC=%d%% Batt=%d Cells=%d MaxCell=%.3fV MinCell=%.3fV", 
+                "Parsed header: V=%.2fV I=%.2fA SOC=%d%% Batt=%d PackTemp=%.1f°C AlarmStatus=%d CurrentStatus=%d", 
                 header["voltage"], header["current"], header["soc"],
-                header["battery_count"], header["cell_count"],
-                header["max_cell_voltage"], header["min_cell_voltage"],
-                header["temperature_min"], header["temperature_min"]
+                header["battery_count"], header["pack_temperature"],
+                header["alarm_status"], header["current_status"]
             )
             
             return header, pos + 66  # Return data and new position
@@ -857,16 +860,16 @@ class AntraDataCoordinator(DataUpdateCoordinator):
             "max_cell_voltage": header_data["max_cell_voltage"],  # 28-31
             "min_cell_voltage": header_data["min_cell_voltage"],  # 32-35
         
-            # Additional parameters (36-43)
-            "temperature_min": header_data["temperature_min"],  # 36-39
-            "temperature_max": header_data["temperature_max"],  # 40-43
+            # Status and temperature (36-43)
+            "alarm_status": header_data["alarm_status"],  # 36-39 Alarm status bits
+            "pack_temperature": header_data["pack_temperature"],  # 40-43 Pack temperature
         
-            # Reserved bytes stored as hex (44-63)
-            "reserved": header_data["reserved"],  # 44-63
+            # Reserved bytes stored as hex (44-61)
+            "reserved": header_data["reserved"],  # 44-61
         
-            # System configuration (64-67)
-            "cell_count": header_data["cell_count"],  # 64-65
-            "battery_count": header_data["battery_count"],  # 66-67
+            # System status and configuration (62-65)
+            "current_status": header_data["current_status"],  # 62-63 Current status bits
+            "battery_count": header_data["battery_count"],  # 64-65
         }
 
     def _transform_battery_data(self, battery_data: dict, battery_num: int) -> dict:
@@ -970,4 +973,3 @@ class AntraDataCoordinator(DataUpdateCoordinator):
         except Exception as err:
             _LOGGER.error("Error getting protocol version: %s", err)
             raise
-        

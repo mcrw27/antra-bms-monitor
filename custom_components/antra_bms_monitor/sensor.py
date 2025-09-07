@@ -356,14 +356,15 @@ pack_header_definitions = [
     ("soc", "System SOC", PERCENTAGE),
     ("max_ambient_temp", "Max Ambient Temperature", UnitOfTemperature.CELSIUS),
     ("min_ambient_temp", "Min Ambient Temperature", UnitOfTemperature.CELSIUS),
-    ("max_cell_voltage", "Max Cell Voltage", "mV"),  # assuming proper conversion
+    ("max_cell_voltage", "Max Cell Voltage", "mV"),
     ("min_cell_voltage", "Min Cell Voltage", "mV"),
-    ("temperature_min", "Pack Temperature Minimum", UnitOfTemperature.CELSIUS),
-    ("temperature_max", "Pack  Temperature Maximum", UnitOfTemperature.CELSIUS),
-    ("cell_count", "Cell Count", None),
+    ("alarm_status", "Alarm Status", None),  
+    ("pack_temperature", "Pack Temperature", UnitOfTemperature.CELSIUS),  
+    ("current_status", "Current Status", None), 
     ("battery_count", "Battery Count", None),
     ("reserved", "Reserved", None),    
 ]
+
     
 class AntraCapacitySensor(AntraBaseSensor):
     """Sensor for battery capacity measurements."""
