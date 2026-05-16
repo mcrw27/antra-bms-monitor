@@ -1,29 +1,39 @@
 name: Release
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
 
 permissions:
-  contents: write  # Only grants permission to modify repository contents
+  contents: write
 
 jobs:
   release_zip:
-    name: Prepare release asset
+    name: Build and publish release
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Verify manifest version matches tag
+        run: |
+          TAG="${GITHUB_REF#refs/tags/v}"
+          MANIFEST=$(jq -r .version custom_components/antra_bms_monitor/manifest.json)
+          if [ "$TAG" != "$MANIFEST" ]; then
+            echo "Tag v$TAG does not match manifest version $MANIFEST"
+            exit 1
+          fi
 
       - name: Create zip file
         run: |
           cd custom_components/antra_bms_monitor
           zip -r ../../antra-bms-monitor.zip .
 
-      - name: Upload zip to release
-        uses: softprops/action-gh-release@v1
+      - name: Create release and upload asset
+        uses: softprops/action-gh-release@v2
         with:
-          files: |
-            antra-bms-monitor.zip
+          files: antra-bms-monitor.zip
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
