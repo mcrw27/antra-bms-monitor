@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.5] - 2026-05-16
+
+### Changed
+- Migrated from the deprecated `pyserial-asyncio` package to `pyserial-asyncio-fast`, the maintained drop-in replacement from home-assistant-libs. Home Assistant 2026.1 deprecated `pyserial-asyncio` in the requirements manager and later releases block it from loading, which prevented this integration from starting.
+- Bumped minimum requirement to `pyserial-asyncio-fast>=0.16`.
+
+### Fixed
+- Integration no longer fails to load on recent Home Assistant releases due to the blocked `pyserial-asyncio` dependency. Closes #1.
+
 ## [0.1.4] - 2025-09-07
 
 ### Fixed
