@@ -384,6 +384,16 @@ class AntraDataCoordinator(DataUpdateCoordinator):
         except asyncio.TimeoutError:
             _LOGGER.warning("Timeout waiting for response")
             return None
+        except asyncio.IncompleteReadError as err:
+            # readuntil() raises this when the stream hits EOF before the
+            # separator is found. For us that means the transport was closed
+            # mid-read (suspect serialx 'closed by peer' on empty os.read).
+            _LOGGER.warning(
+                "Serial reader hit EOF mid-read (suspect serialx 'closed by peer'). "
+                "Partial bytes: %d. Integration must be reloaded to reopen the port.",
+                len(err.partial) if err.partial else 0,
+            )
+            return None
         except Exception as err:
             _LOGGER.error("Error reading response: %s", err)
             return None
@@ -763,6 +773,39 @@ class AntraDataCoordinator(DataUpdateCoordinator):
 
     async def _send_command(self, command: bytes, battery_number: int | None = None) -> bytes | None:
         """Send command and get response."""
+        # Detect transport-closed state. serialx (>=1.0) interprets an empty
+        # os.read() as 'closed by peer' and signals EOF on the StreamReader,
+        # which permanently breaks subsequent reads. If we ever hit this,
+        # log loudly so we can confirm the failure mode. Recovery requires
+        # reloading the config entry to reopen the port.
+        if self._reader.at_eof():
+            _LOGGER.warning(
+                "Serial reader is at EOF before send. The underlying transport "
+                "was closed (suspect serialx 'closed by peer' on empty os.read). "
+                "Integration must be reloaded to reopen the port."
+            )
+            return None
+
+        # Drain any stale bytes left in the StreamReader buffer from a previous
+        # interrupted read. Without this, readuntil() can return the tail of an
+        # old frame glued to the head of a new one (checksum fail) or never
+        # find a \r delimiter at all (timeout). 50 ms is well inside the
+        # protocol's 850 ms inter-command gap.
+        drained = 0
+        try:
+            async with asyncio.timeout(0.05):
+                while True:
+                    stale = await self._reader.read(4096)
+                    if not stale:
+                        break
+                    drained += len(stale)
+        except asyncio.TimeoutError:
+            pass
+        except Exception as err:
+            _LOGGER.warning("Error draining stale buffer: %s", err)
+        if drained:
+            _LOGGER.debug("Discarded %d stale bytes from reader buffer before send", drained)
+
         cmd_packet = self._build_command(command, battery_number)
         formatted_cmd = self._format_message(cmd_packet)
         _LOGGER.debug("Sending command: %s", formatted_cmd)

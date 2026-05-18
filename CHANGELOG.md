@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.7] - 2026-05-18
+
+### Fixed
+- Coordinator now drains stale bytes from the StreamReader buffer at the start of each `_send_command`. Root cause of the "first poll works, all subsequent polls fail" symptom: any read that timed out partway through a frame left partial data in the reader buffer permanently, so the next poll's `readuntil(b"\r")` either returned a tail-of-old + head-of-new frame that failed checksum, or never found a `\r` within timeout. Drain is bounded to 50 ms, well inside the protocol's 850 ms inter-command gap.
+
+### Added
+- Warning log when the StreamReader is at EOF before a send, or when `readuntil` raises `IncompleteReadError` mid-read. Helps confirm whether the serialx-specific "empty `os.read()` treated as closed by peer" path (descriptor_transport.py:84-105) is firing in this environment. If either warning appears, the transport has been closed and the integration must be reloaded to reopen the port.
+
 ## [0.1.6] - 2026-05-18
 
 ### Changed
