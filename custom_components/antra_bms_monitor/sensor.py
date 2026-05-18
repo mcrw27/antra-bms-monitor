@@ -39,7 +39,7 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Antra sensor platform."""
-    import serial_asyncio_fast as serial_asyncio
+    import serialx as serial_asyncio
 
     _LOGGER.debug(
         "Setting up Antra sensor platform with config: port=%s, baud=%s, max_batteries=%s",

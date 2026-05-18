@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.6] - 2026-05-18
+
+### Changed
+- Migrated from `pyserial-asyncio-fast` to `serialx`, the new official replacement from the Home Assistant team. The April 2026 HA developer blog deprecated `pyserial-asyncio-fast` and pointed integrations at `serialx`, citing "critical fixes for asyncio event loop stability". Observed symptom on this integration with `pyserial-asyncio-fast`: first poll after setup or reload succeeded, all subsequent polls intermittently failed (timeouts, plus occasional checksum-mismatched frames suggesting truncated reads). Consistent with an asyncio reader that doesn't reliably drain the OS serial buffer in time.
+- Bumped minimum requirement to `serialx>=1.0`.
+
+### Fixed
+- Intermittent BMS read timeouts and checksum failures after the first successful poll. Pending real-world validation on 4-pack RS485 deployment.
+
 ## [0.1.5] - 2026-05-16
 
 ### Changed
